@@ -10,14 +10,31 @@ proj_secret = "6c4a430ca570bfc603e0c2b9cd1699a7"
 # Init
 w3 = Web3(Web3.HTTPProvider("https://polygon-amoy.infura.io/v3/b0f53a900b384eb1924a4cc9785afa39"))
 w3.middleware_onion.inject(geth_poa.geth_poa_middleware, layer=0)
-ABI=[{"inputs":[{"internalType":"address","name":"adminAddress","type":"address"}],"name":"addAdmin","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"add","type":"address"}],"name":"containAdmin","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"add","type":"address"}],"name":"onlyAdmin","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"}]
-contractAddress="0xe4e573c776Ea54764E25aAf99B7b99De2ff4d78C"
+ABI=[{"inputs":[{"internalType":"address","name":"adminAddress","type":"address"}],"name":"addAdmin","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"newDoctorAddress","type":"address"},{"internalType":"address","name":"AdminCalling","type":"address"}],"name":"addDoctor","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"add","type":"address"}],"name":"containAdmin","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"add","type":"address"}],"name":"containDoctor","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"}]
+contractAddress="0xeA103529C1D64237d02927Dc91845a5b40A30c14"
 
 contract_instance = w3.eth.contract(address=contractAddress, abi=ABI)
 
 # For testing purposes we will sign transactions with provided keys , when we connect metamask we are gonna move it to support wallet signature
-public_key="0x9cd4D8EcA8954e55ea1B8d194B2A4E5dfb4EE7dc"
-private_key="ce136daa0b7ffc83cf1ac6aae719e25e31037b117913b751a0726a551a5e9d17"
+public_key=""
+private_key=""
+
+
+def verify_keys(public_key, private_key):
+    
+    # Derive the public key from the private key
+    derived_public_key = w3.eth.account.from_key(private_key).address
+    
+    # Compare the derived public key with the provided public key
+    if derived_public_key == public_key:
+        public_key=public_key
+        private_key=private_key
+        return True
+    else:
+        return False
+
+
+
 
 # For sending transactions
 def send_signed_transaction(signed_transaction):
@@ -29,19 +46,15 @@ def to_32byte_hex(val):
 
 def fireTransaction(transaction_data):
     # Sign the transaction locally
-    signed_transaction = Account.sign_transaction(
-        transaction_data, private_key)
-
-    # Send the signed transaction
-    transaction_hash = send_signed_transaction(signed_transaction)
-    tx_receipt = w3.eth.waitForTransactionReceipt(transaction_hash)
-    return tx_receipt 
+    tx_hash = w3.eth.sendTransaction(transaction_data)
+    tx_receipt = w3.eth.waitForTransactionReceipt(tx_hash)
+    return tx_receipt
 
 def addAdmin(address):
     # Construct the transaction data
-    nounce=w3.eth.getTransactionCount(public_key)
+    nounce=w3.eth.getTransactionCount(w3.eth.defaultAccount)
     transaction_data = contract_instance.functions.addAdmin(address).buildTransaction({
-        'from': public_key,
+        'from': w3.eth.defaultAccount,
         'value': 0,
         'gas': 2000000,
         'gasPrice':w3.toWei('50', 'gwei'),
@@ -52,8 +65,13 @@ def addAdmin(address):
     return fireTransaction(transaction_data)
 
 def containAdmin(address):
-    nounce=w3.eth.getTransactionCount(public_key)
-    transaction_data = contract_instance.functions.containAdmin(address).buildTransaction({
+    result = contract_instance.functions.containAdmin(address).call()
+    return result
+
+def addDoctor(docAdd,admin):
+# Construct the transaction data
+    nounce=w3.eth.getTransactionCount(w3.eth.defaultAccount)
+    transaction_data = contract_instance.functions.addDoctor(docAdd,admin).buildTransaction({
         'from': public_key,
         'value': 0,
         'gas': 2000000,
@@ -65,5 +83,7 @@ def containAdmin(address):
     return fireTransaction(transaction_data)
 
 
+def containDoctor(address):
+    result = contract_instance.functions.containDoctor(address).call()
+    return result
 
-print(containAdmin("0x9cd4D8EcA8954e55ea1B8d194B2A4E5dfb4EE7dc"))

@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script type="module" src="https://pyscript.net/releases/2024.3.2/core.js"></script>
+    <title>MetaMask Connect</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f0f0f0;
+        }
+        .container {
+            width: 300px;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            background-color: #fff;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        .input-group {
+            margin-bottom: 20px;
+        }
+        .input-group input {
+            width: calc(100% - 10px);
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        .input-group img {
+            width: 24px;
+            vertical-align: middle;
+            margin-left: 5px;
+        }
+        .btn-connect {
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            padding: 10px 20px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .btn-connect:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Connect with Wallet</h2>
+        <div class="input-group">
+            <input type="text" id="walletAddress" placeholder="Wallet Address">
+        </div>
+        <div class="input-group">
+            <input type="password" id="privateKey" placeholder="Private Key">
+        </div>
+        <button class="btn-connect" onclick="connectWallet()">Connect</button>
+    </div>
+    <script>
+        function connectWallet() {
+            var pk = document.getElementById("walletAddress").value;
+            var privKey = document.getElementById("privateKey").value;
+            let bodyContent = JSON.stringify({
+                        "pk":pk,
+                        "privKey": privKey
+                    });
+                    let headersList = {
+                        "Accept": "*/*",
+                        "Content-Type": "application/json"
+                        }
+            fetch('http://127.0.0.1:8000/connect', {
+                method: 'POST',
+                body: bodyContent,
+                headers: headersList
+            })
+            .then(res=>res.json())
+            .then(data=>console.log(data))
+        }
+    </script>
+</body>
+</html>
