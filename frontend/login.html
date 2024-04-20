@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="login-container">
+        <h1>Login</h1>
+        <input type="text" id="walletAddress" placeholder="Wallet Address">
+        <input type="password" id="privateKey" placeholder="Private Key">
+        <button onclick="connectWallet()">Login</button>
+    </div>
+    <script>
+        function connectWallet() {
+    var pk = document.getElementById("walletAddress").value;
+    var privKey = document.getElementById("privateKey").value;
+    let bodyContent = JSON.stringify({
+                "pk":pk,
+                "privKey": privKey
+            });
+            let headersList = {
+                "Accept": "*/*",
+                "Content-Type": "application/json"
+                }
+    fetch('http://127.0.0.1:8000/connect', {
+        method: 'POST',
+        body: bodyContent,
+        headers: headersList
+    })
+    .then(res=>res.json())
+    .then(data=>{
+        if(data.authentication == "Admin"){
+            window.location.href='http://127.0.0.1:5500/frontend/admin.html';
+        }
+        else{
+            if(data.authentication == "Doc"){
+                window.location.href='http://127.0.0.1:5500/frontend/dashboard.html';
+            }
+        }
+    })
+}
+    </script>
+</body>
+</html>
+
+
+<style>
+    body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #282a36;
+}
+
+.login-container {
+    width: 320px;
+    padding: 40px;
+    border-radius: 8px;
+    background-color: #44475a;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+h1 {
+    margin-bottom: 20px;
+    color: #dddddd;
+}
+
+input[type="text"],
+input[type="password"] {
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 20px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    box-sizing: border-box;
+    font-size: 16px;
+}
+
+button {
+    width: 100%;
+    padding: 12px;
+    border-radius: 8px;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s ease;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+</style>

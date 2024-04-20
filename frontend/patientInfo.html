@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Patient Information</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="modal-content">
+        <h1>Patient Information</h1>
+        <input type="text" id="patientAddress" placeholder="Enter Patient Address" required>
+        <button onclick="getPatientInfo()" class="btn">Get Info</button>
+        <div id="patientInfoDisplay"></div>
+        <table id="prescriptions-table"></table>
+    </div>
+    <script>
+
+function getPatients(){
+    let headersList = {
+        "Accept": "*/*",
+        "Content-Type": "application/json"
+    };
+
+    return fetch('http://127.0.0.1:8000/getPatients/', {
+        method: 'GET',
+        headers: headersList
+    })
+    .then(response => response.json())
+    .then(data => {
+        // Filter out objects that only contain prescriptions
+        const patientObjects = Object.keys(data).filter(key => Object.keys(data[key]).length > 1).map(key => data[key]);
+        // Flatten the array of arrays into a single array
+        return patientObjects.flatMap(patientObject => patientObject);
+    });
+}
+
+    function getPatientInfo() {
+        const address = document.getElementById('patientAddress').value;
+
+        let headersList = {
+            "Accept": "*/*",
+            "Content-Type": "application/json"
+        };
+
+        fetch('http://127.0.0.1:8000/getPrescriptions/' + address, {
+            method: 'GET',
+            headers: headersList
+        })
+        .then(response => response.json())
+        .then(data => displayPrescriptions(data));
+    }
+
+    function displayPatients(patientsArray) {
+    const patientInfoDisplay = document.getElementById('patientInfoDisplay');
+    patientInfoDisplay.innerHTML = '';
+
+    const patientList = document.createElement('ul');
+    patientsArray.forEach(address => {
+        const listItem = document.createElement('li');
+        listItem.textContent = address;
+        patientList.appendChild(listItem);
+    });
+    patientInfoDisplay.appendChild(patientList);
+}
+
+
+    function displayPrescriptions(prescriptionsObject) {
+        const prescriptions = JSON.parse(prescriptionsObject.prescriptions);
+        const table = document.getElementById('prescriptions-table');
+        table.innerHTML = '';
+
+        const headers = ['Patient Address', 'Normal Medication', 'Normal Dosage', 'Branded Medication', 'Branded Dosage', 'age', 'diagnoses'];
+        const headerRow = document.createElement('tr');
+        headers.forEach(headerText => {
+            const header = document.createElement('th');
+            header.textContent = headerText;
+            headerRow.appendChild(header);
+        });
+        table.appendChild(headerRow);
+
+        prescriptions.forEach(prescription => {
+            const row = document.createElement('tr');
+            Object.values(prescription).forEach(value => {
+                const cell = document.createElement('td');
+                cell.textContent = value;
+                row.appendChild(cell);
+            });
+            table.appendChild(row);
+        });
+    }
+
+    // Call getPatients function when the page is loaded
+    window.onload = function() {
+        getPatients()
+            .then(data => displayPatients(data));
+    };
+
+    </script>
+</body>
+</html>
