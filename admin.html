@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    
+    <div class="dashboard-container">
+        <h1>Admin Dashboard</h1>
+        <textarea id="publickey" placeholder="publickey"></textarea>
+        <textarea id="prkey" placeholder="privatekey"></textarea>
+        <div class="input-container">
+            <div class="input-wrapper">
+                <textarea id="doctorInfo" placeholder="Wallet Adress"></textarea>
+                <textarea id="doctorName" placeholder="Doctor Name"></textarea>
+                <textarea id="doctorSp" placeholder="Specialty"></textarea>
+
+            </div>
+            <div class="button-container">
+                <div class="button" onclick="addDoctor()">Add Doctor</div>
+                <div class="button" onclick="removeDoctor()">Remove Doctor</div>
+            </div>
+        </div>
+        <div class="form-container">
+            <h2>Add Admin</h2>
+            <div class="input-container">
+                <textarea id="adminInfo" placeholder="Wallet Address" rows="3"></textarea>
+            </div>
+            <div class="button-container">
+                <div class="button" onclick="addAdmin()">Add Admin</div>
+            </div>
+        </div>
+    </div>
+
+        <div id="doctorList"></div>
+    </div>
+    <script>
+        function addDoctor() {
+    const doctorAddress = document.getElementById('doctorInfo').value;
+    const doctorName = document.getElementById('doctorName').value;
+    const doctorsp = document.getElementById('doctorSp').value;
+    const pk = document.getElementById('publickey').value;
+    const pvk = document.getElementById('prkey').value;
+
+
+    let bodyContent = JSON.stringify({
+        "address":doctorAddress,
+        "name": doctorName,
+        "specialty":doctorsp,
+        "pk":pk,
+        "privKey":pvk
+
+    });
+    let headersList = {
+        "Accept": "*/*",
+        "Content-Type": "application/json"
+        };
+        console.log(bodyContent)
+    fetch('http://127.0.0.1:8000/addDoctor', {
+        method: 'POST',
+        body: bodyContent,
+        headers: headersList
+    
+    })
+    .then(response => response.json())
+    .then(data =>console.log(data))
+}
+
+function addAdmin() {
+            const adminAddress = document.getElementById('adminInfo').value;
+            const pk = document.getElementById('publickey').value;
+            const pvk = document.getElementById('prkey').value;
+
+            let bodyContent = JSON.stringify({
+                "address": adminAddress,
+                "pk":pk,
+                "privKey":pvk
+            });
+
+            let headersList = {
+                "Accept": "*/*",
+                "Content-Type": "application/json"
+            };
+
+            fetch('http://127.0.0.1:8000/addAdmin', {
+                method: 'POST',
+                body: bodyContent,
+                headers: headersList
+            })
+            .then(response => response.json())
+            .then(data => console.log(data))
+            .catch(error => console.error('Error:', error));
+        }
+    </script>
+</body>
+</html>
+
+<style>input-container {
+    
+    align-items: center;
+    margin-bottom: 20px; 
+    padding: 12px 24px;
+    border-radius: 8px;/* Adjust as needed */
+}
+
+.input-wrapper {
+    flex: 1;
+    margin-right: 25px; 
+    margin-left: 0px;/* Space between input and buttons */
+}
+
+#doctorInfo,#doctorName,#doctorSp {
+    width: 100%; /* Take up full width within the input wrapper */
+    min-height: 35px; /* Set a minimum height for the textarea */
+    padding: 12px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    resize: none; /* Allow vertical resizing */
+}
+
+.button-container {
+    display: flex;
+    flex-direction: column;
+    gap: 10px; /* Adjust the gap between buttons */
+}
+
+.button {
+    padding: 12px 24px;
+    border-radius: 8px;
+    background-color: #007bff;
+    color: #fff;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.button:hover {
+    background-color: #0056b3;
+}
+</style>
