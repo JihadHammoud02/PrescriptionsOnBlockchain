@@ -25,7 +25,7 @@
                 "Accept": "*/*",
                 "Content-Type": "application/json"
                 }
-    fetch('http://127.0.0.1:8000/connect', {
+    fetch('https://biological-maible-test3.koyeb.app/connect', {
         method: 'POST',
         body: bodyContent,
         headers: headersList
@@ -33,11 +33,11 @@
     .then(res=>res.json())
     .then(data=>{
         if(data.authentication == "Admin"){
-            window.location.href='http://127.0.0.1:5500/frontend/admin.html';
+            window.location.href='admin.html';
         }
         else{
             if(data.authentication == "Doc"){
-                window.location.href='http://127.0.0.1:5500/frontend/dashboard.html';
+                window.location.href='dashboard.html';
             }
         }
     })

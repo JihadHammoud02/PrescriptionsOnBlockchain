@@ -59,7 +59,7 @@
         "Content-Type": "application/json"
         };
         console.log(bodyContent)
-    fetch('http://127.0.0.1:8000/addDoctor', {
+    fetch('https://biological-maible-test3.koyeb.app/addDoctor', {
         method: 'POST',
         body: bodyContent,
         headers: headersList
@@ -85,7 +85,7 @@ function addAdmin() {
                 "Content-Type": "application/json"
             };
 
-            fetch('http://127.0.0.1:8000/addAdmin', {
+            fetch('https://biological-maible-test3.koyeb.app/addAdmin', {
                 method: 'POST',
                 body: bodyContent,
                 headers: headersList

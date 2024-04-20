@@ -22,7 +22,7 @@ function getPatients(){
         "Content-Type": "application/json"
     };
 
-    return fetch('http://127.0.0.1:8000/getPatients/', {
+    return fetch('https://biological-maible-test3.koyeb.app/getPatients/', {
         method: 'GET',
         headers: headersList
     })
@@ -43,7 +43,7 @@ function getPatients(){
             "Content-Type": "application/json"
         };
 
-        fetch('http://127.0.0.1:8000/getPrescriptions/' + address, {
+        fetch('https://biological-maible-test3.koyeb.app/getPrescriptions/' + address, {
             method: 'GET',
             headers: headersList
         })
